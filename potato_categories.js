@@ -23,6 +23,8 @@ var STAGE_WIDTH, STAGE_HEIGHT;
 var questionCounter;
 var score;
 
+var potatoIndex;
+
 /*
  * Called by body onload
  */
@@ -72,7 +74,7 @@ function endGame() {
 
 	var scoreText = new createjs.Text("Score: " + score + "/" + questions.length, "40px Sans", "black");
 	scoreText.x = STAGE_WIDTH/2 - scoreText.getMeasuredWidth()/2;
-	scoreText.y = STAGE_HEIGHT/2 - 20;
+	scoreText.y = STAGE_HEIGHT/2 - 100;
 
 	createjs.Tween.get(scoreText).wait(1000).call(function() {
 		stage.addChild(endScreen);
@@ -95,6 +97,11 @@ function initGraphics() {
 	xMark.x = STAGE_WIDTH/2;
 	xMark.y = STAGE_HEIGHT/2;
 
+	// potato stuff
+	potatoIndex = potatoParts.length/2 - 1;
+	// init potato
+	updatePotato();
+
 	// render the 2 categories to the screen
 	categories[0].scaleX = CATEGORY_IMAGE_WIDTH / categories[0].image.width;
 	categories[1].scaleX = CATEGORY_IMAGE_WIDTH / categories[1].image.width;
@@ -113,7 +120,34 @@ function initGraphics() {
 
 	renderQuestion(0); // render the first question
 
+
 	gameStarted = true;
+}
+
+function updatePotato() {
+
+	// remove parts
+	for (var part of potatoParts) {
+		stage.removeChild(part);
+	}
+	stage.removeChild(potatoBody);
+
+	// add correct number of parts
+	for (var i = 0; i <= potatoIndex; i++) {
+		if (i === 3) {
+			stage.addChild(potatoBody);
+		}
+		stage.addChild(potatoParts[i]);
+		if (i === potatoIndex && potatoIndex < 3) {
+			stage.addChild(potatoBody);
+		}
+	}
+
+	console.log(potatoIndex)
+	// make sure body is still rendered
+	if (potatoIndex === -1) {
+		stage.addChild(potatoBody);
+	}
 }
 
 function renderQuestion(index) {
@@ -172,10 +206,18 @@ function imageDropHandler(event) {
 
 	if (guess !== -1) {
 		playSound("click");
-		if (parseInt(answers.charAt(questionCounter)) === guess) {
-			correctAnimation();
+		if (parseInt(answers.charAt(questionCounter)) === guess) { // CORRECT
+			
 			score++;
-		} else {
+			// add a part to potato
+			potatoIndex++;
+			updatePotato();
+			correctAnimation();
+		} else { 												// INCORRECT
+			
+			// remove a part from potato
+			potatoIndex--;
+			updatePotato();
 			wrongAnimation();
 		}
 
@@ -213,6 +255,8 @@ var questions = [];
 var categories = [];
 var background, endscreen;
 var checkMark, xMark;
+var potatoParts = [];
+var potatoBody;
 
 var PATH_TO_SUB_FOLDER = "images/question_images/" + SUB_FOLDER + "/";
 
@@ -265,6 +309,50 @@ function setupManifest() {
 		{
 			src: "images/endscreen.png",
 			id: "endscreen"
+		},
+		{
+			src: "images/potato_parts/shoes.png",
+			id: "potato0"
+		},
+		{
+			src: "images/potato_parts/arms.png",
+			id: "potato1"
+		},
+		{
+			src: "images/potato_parts/ears.png",
+			id: "potato2"
+		},
+		{
+			src: "images/potato_parts/eyes.png",
+			id: "potato3"
+		},
+		{
+			src: "images/potato_parts/mouth.png",
+			id: "potato4"
+		},
+		{
+			src: "images/potato_parts/moustache.png",
+			id: "potato5"
+		},
+		{
+			src: "images/potato_parts/nose.png",
+			id: "potato6"
+		},
+		{
+			src: "images/potato_parts/glasses.png",
+			id: "potato7"
+		},
+		{
+			src: "images/potato_parts/tie.png",
+			id: "potato8"
+		},
+		{
+			src: "images/potato_parts/hat.png",
+			id: "potato9"
+		},
+		{
+			src: "images/potato_parts/potato.png",
+			id: "body"
 		}
 	];
 }
@@ -294,6 +382,11 @@ function handleFileLoad(event) {
    		background = new createjs.Bitmap(event.result);
    	} else if (event.item.id == "endscreen") {
    		endScreen = new createjs.Bitmap(event.result);
+   	} else if (event.item.id.includes("potato")) {
+   		var index = event.item.id[event.item.id.length - 1];
+   		potatoParts.push(new createjs.Bitmap(event.result));
+   	} else if (event.item.id == "body") {
+   		potatoBody = new createjs.Bitmap(event.result);
    	}
 }
 
@@ -317,6 +410,8 @@ function loadComplete(event) {
     // ticker calls update function, set the FPS
 	createjs.Ticker.setFPS(FPS);
 	createjs.Ticker.addEventListener("tick", update); // call update function
+
+
 
 
 	stage.addChild(background);
