@@ -12,11 +12,11 @@ var mute = false;
 var FPS = 24;
 var gameStarted;
 
-var IMAGE_WIDTH = 200; 
-var IMAGE_HEIGHT = 140;
+var IMAGE_WIDTH = 150; 
+var IMAGE_HEIGHT = 210;
 
-var CATEGORY_IMAGE_WIDTH = 100;
-var CATEGORY_IMAGE_HEIGHT = 70;
+var CATEGORY_IMAGE_WIDTH = 195;
+var CATEGORY_IMAGE_HEIGHT = 108;
 
 var STAGE_WIDTH, STAGE_HEIGHT;
 
@@ -104,10 +104,10 @@ function initGraphics() {
 	categories[1].regX = categories[1].getBounds().width/2;
 	categories[0].regY = categories[0].getBounds().height/2;
 	categories[1].regY = categories[1].getBounds().height/2;
-	categories[0].x = STAGE_WIDTH/2 - categories[0].getBounds().width * categories[0].scaleX - 70;
-	categories[1].x = STAGE_WIDTH/2 + categories[1].getBounds().width * categories[1].scaleX + 70;
-	categories[0].y = STAGE_HEIGHT - categories[0].image.height * categories[0].scaleY + 20;
-	categories[1].y = STAGE_HEIGHT - categories[1].image.height * categories[1].scaleY + 20;
+	categories[0].x = STAGE_WIDTH/4 + 5;
+	categories[1].x = STAGE_WIDTH/4 * 3 - 5;
+	categories[0].y = STAGE_HEIGHT - categories[0].image.height * categories[0].scaleY + 35;
+	categories[1].y = STAGE_HEIGHT - categories[1].image.height * categories[1].scaleY + 35;
 	stage.addChild(categories[0]); 
 	stage.addChild(categories[1]);
 
@@ -123,8 +123,8 @@ function renderQuestion(index) {
 	questions[index].regX = questions[index].image.width/2;
 	questions[index].regY = questions[index].image.height/2;
 
-	questions[index].x = STAGE_WIDTH/2;
-	questions[index].y = STAGE_HEIGHT/2 - 50;
+	questions[index].x = STAGE_WIDTH/4 - 20;
+	questions[index].y = STAGE_HEIGHT/2 - 55;
 
 	questions[index].cursor = "pointer";
 
@@ -165,8 +165,8 @@ function imageDropHandler(event) {
 	} else if (ndgmr.checkRectCollision(categories[1], event.target) != null) {
 		guess = 2;
 	} else {
-		event.target.x = STAGE_WIDTH/2;
-		event.target.y = STAGE_HEIGHT/2 - 50;
+		event.target.x = STAGE_WIDTH/4 - 20;
+		event.target.y = STAGE_HEIGHT/2 - 55;
 		return;
 	}
 
