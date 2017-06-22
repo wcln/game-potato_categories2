@@ -62,13 +62,24 @@ function update(event) {
 				if (ndgmr.checkRectCollision(cat, questions[questionCounter]) != null) {
 					cat.scaleX = (CATEGORY_IMAGE_WIDTH / cat.image.width) * 1.2;
 					cat.scaleY = (CATEGORY_IMAGE_HEIGHT / cat.image.height) * 1.2;
-					cat.alpha = 0.5;
+					//cat.alpha = 0.5;
 					questions[questionCounter].alpha = 0.5;
 					selectedCategory = i;
+
+					i = categories.length;
+
+					// reset alpha of other categories (fixes but when moving from right to left)
+					for (var j = 0; j < categories.length; j++) {
+						if (selectedCategory !== j) {
+							categories[j].scaleX = CATEGORY_IMAGE_WIDTH / categories[j].image.width;
+							categories[j].scaleY = CATEGORY_IMAGE_HEIGHT / categories[j].image.height;
+							categories[j].alpha = 1.0;
+						}
+					}
 				} else {
 					cat.scaleX = CATEGORY_IMAGE_WIDTH / cat.image.width;
 					cat.scaleY = CATEGORY_IMAGE_HEIGHT / cat.image.height;
-					cat.alpha = 1.0;
+					//cat.alpha = 1.0;
 					questions[questionCounter].alpha = 1.0;
 				}
 			}
@@ -87,9 +98,16 @@ function update(event) {
 function endGame() {
 	gameStarted = false;
 
+	// reset scale and alpha of category images so they dont get "stuck"
+	for (var cat of categories) {
+		cat.scaleX = CATEGORY_IMAGE_WIDTH / cat.image.width;
+		cat.scaleY = CATEGORY_IMAGE_HEIGHT / cat.image.height;
+		cat.alpha = 1;
+	}
+
 	var scoreText = new createjs.Text("Score: " + score + "/" + questions.length, "40px Sans", "black");
 	scoreText.x = STAGE_WIDTH/2 - scoreText.getMeasuredWidth()/2;
-	scoreText.y = STAGE_HEIGHT/2 - 100;
+	scoreText.y = STAGE_HEIGHT/2 - 40;
 
 	createjs.Tween.get(scoreText).wait(1000).call(function() {
 		stage.addChild(endScreen);
@@ -158,7 +176,6 @@ function updatePotato() {
 		}
 	}
 
-	console.log(potatoIndex)
 	// make sure body is still rendered
 	if (potatoIndex === -1) {
 		stage.addChild(potatoBody);
@@ -172,8 +189,8 @@ function renderQuestion(index) {
 	questions[index].regX = questions[index].image.width/2;
 	questions[index].regY = questions[index].image.height/2;
 
-	questions[index].x = STAGE_WIDTH/4 - 20;
-	questions[index].y = STAGE_HEIGHT/2 - 55;
+	questions[index].x = STAGE_WIDTH/4 - 17;
+	questions[index].y = STAGE_HEIGHT/2 - 57;
 
 	questions[index].cursor = "pointer";
 
@@ -208,18 +225,9 @@ function imageClickHandler(event) {
 }
 
 function imageDropHandler(event) {
-	var guess = -1;
-	if (questions[questionCounter].x <= STAGE_WIDTH/2 && ndgmr.checkRectCollision(categories[0], event.target) != null) {
-		guess = 1;
-	} else if (questions[questionCounter].x >= STAGE_WIDTH/2 && ndgmr.checkRectCollision(categories[1], event.target) != null) {
-		guess = 2;
-	} else {
-		event.target.x = STAGE_WIDTH/4 - 20;
-		event.target.y = STAGE_HEIGHT/2 - 55;
-		return;
-	}
+	var guess = selectedCategory + 1;
 
-	if (guess !== -1) {
+	if (guess !== 0) {
 		playSound("click");
 		if (parseInt(answers.charAt(questionCounter)) === guess) { // CORRECT
 			
@@ -246,6 +254,9 @@ function imageDropHandler(event) {
 		} else {
 			renderQuestion(questionCounter);
 		}
+	} else {
+		event.target.x = STAGE_WIDTH/4 - 17;
+		event.target.y = STAGE_HEIGHT/2 - 57;
 	}
 }
 
@@ -282,31 +293,31 @@ function setupManifest() {
 			id: "click"
 		},
 		{
-			src: PATH_TO_SUB_FOLDER + "category1.jpg",
+			src: PATH_TO_SUB_FOLDER + "category1.png",
 			id: "category1"
 		},
 		{
-			src: PATH_TO_SUB_FOLDER + "category2.jpg",
+			src: PATH_TO_SUB_FOLDER + "category2.png",
 			id: "category2"
 		},
 		{
-			src: PATH_TO_SUB_FOLDER + "question1.jpg",
+			src: PATH_TO_SUB_FOLDER + "question1.png",
 			id: "question1"
 		},
 		{
-			src: PATH_TO_SUB_FOLDER + "question2.jpg",
+			src: PATH_TO_SUB_FOLDER + "question2.png",
 			id: "question2"
 		},
 		{
-			src: PATH_TO_SUB_FOLDER + "question3.jpg",
+			src: PATH_TO_SUB_FOLDER + "question3.png",
 			id: "question3"
 		},
 		{
-			src: PATH_TO_SUB_FOLDER + "question4.jpg",
+			src: PATH_TO_SUB_FOLDER + "question4.png",
 			id: "question4"
 		},
 		{
-			src: PATH_TO_SUB_FOLDER + "question5.jpg",
+			src: PATH_TO_SUB_FOLDER + "question5.png",
 			id: "question5"
 		},
 		{
