@@ -25,6 +25,8 @@ var score;
 
 var potatoIndex;
 
+var selectedCategory = -1;
+
 /*
  * Called by body onload
  */
@@ -47,20 +49,33 @@ function init() {
 
 function update(event) {
 	if (gameStarted) {
-		for (var cat of categories) {
-			if (ndgmr.checkRectCollision(cat, questions[questionCounter]) != null) {
-				cat.scaleX = (CATEGORY_IMAGE_WIDTH / cat.image.width) * 1.2;
-				cat.scaleY = (CATEGORY_IMAGE_HEIGHT / cat.image.height) * 1.2;
-				cat.alpha = 0.5;
-				questions[questionCounter].alpha = 0.5;
-				break;
-			} else {
-				cat.scaleX = CATEGORY_IMAGE_WIDTH / cat.image.width;
-				cat.scaleY = CATEGORY_IMAGE_HEIGHT / cat.image.height;
-				cat.alpha = 1.0;
-				questions[questionCounter].alpha = 1.0;
+
+		// note: selected category logic is required so that both categories can not be selected at the same time (since image will overlap both)
+		if (selectedCategory !== -1) {
+			if (ndgmr.checkRectCollision(categories[selectedCategory], questions[questionCounter]) == null) {
+				selectedCategory = -1;
+			}
+		} else {
+			for (var i = 0; i < categories.length; i++) {
+				let cat = categories[i];
+
+				if (ndgmr.checkRectCollision(cat, questions[questionCounter]) != null) {
+					cat.scaleX = (CATEGORY_IMAGE_WIDTH / cat.image.width) * 1.2;
+					cat.scaleY = (CATEGORY_IMAGE_HEIGHT / cat.image.height) * 1.2;
+					cat.alpha = 0.5;
+					questions[questionCounter].alpha = 0.5;
+					selectedCategory = i;
+				} else {
+					cat.scaleX = CATEGORY_IMAGE_WIDTH / cat.image.width;
+					cat.scaleY = CATEGORY_IMAGE_HEIGHT / cat.image.height;
+					cat.alpha = 1.0;
+					questions[questionCounter].alpha = 1.0;
+				}
 			}
 		}
+
+
+		
 	}
 
 	stage.update(event);
@@ -194,9 +209,9 @@ function imageClickHandler(event) {
 
 function imageDropHandler(event) {
 	var guess = -1;
-	if (ndgmr.checkRectCollision(categories[0], event.target) != null) {
+	if (questions[questionCounter].x <= STAGE_WIDTH/2 && ndgmr.checkRectCollision(categories[0], event.target) != null) {
 		guess = 1;
-	} else if (ndgmr.checkRectCollision(categories[1], event.target) != null) {
+	} else if (questions[questionCounter].x >= STAGE_WIDTH/2 && ndgmr.checkRectCollision(categories[1], event.target) != null) {
 		guess = 2;
 	} else {
 		event.target.x = STAGE_WIDTH/4 - 20;
