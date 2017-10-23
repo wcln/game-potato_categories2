@@ -284,7 +284,7 @@ var checkMark, xMark;
 var potatoParts = [];
 var potatoBody;
 
-var PATH_TO_SUB_FOLDER = "images/question_images/" + SUB_FOLDER + "/";
+var PATH_TO_SUB_FOLDER = "versions/" + SUB_FOLDER + "/";
 
 function setupManifest() {
 	manifest = [
