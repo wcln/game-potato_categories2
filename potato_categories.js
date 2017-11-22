@@ -12,7 +12,7 @@ var mute = false;
 var FPS = 24;
 var gameStarted;
 
-var IMAGE_WIDTH = 150; 
+var IMAGE_WIDTH = 150;
 var IMAGE_HEIGHT = 210;
 
 var CATEGORY_IMAGE_WIDTH = 195;
@@ -86,7 +86,7 @@ function update(event) {
 		}
 
 
-		
+
 	}
 
 	stage.update(event);
@@ -120,6 +120,8 @@ function endGame() {
 
 function initGraphics() {
 
+	initMuteUnMuteButtons();
+
 	// animation stuff
 	checkMark.regX = checkMark.image.width/2;
 	checkMark.regY = checkMark.image.height/2;
@@ -148,13 +150,33 @@ function initGraphics() {
 	categories[1].x = STAGE_WIDTH/4 * 3 - 5;
 	categories[0].y = STAGE_HEIGHT - categories[0].image.height * categories[0].scaleY + 35;
 	categories[1].y = STAGE_HEIGHT - categories[1].image.height * categories[1].scaleY + 35;
-	stage.addChild(categories[0]); 
+	stage.addChild(categories[0]);
 	stage.addChild(categories[1]);
 
 	renderQuestion(0); // render the first question
 
 
 	gameStarted = true;
+}
+
+/*
+ * Adds the mute and unmute buttons to the stage and defines listeners
+ */
+function initMuteUnMuteButtons() {
+	var hitArea = new createjs.Shape();
+	hitArea.graphics.beginFill("#000").drawRect(0, 0, muteButton.image.width, muteButton.image.height);
+	muteButton.hitArea = unmuteButton.hitArea = hitArea;
+
+	muteButton.x = unmuteButton.x = STAGE_WIDTH - muteButton.image.width - 5;
+	muteButton.y = unmuteButton.y = 145;
+
+	muteButton.cursor = "pointer";
+	unmuteButton.cursor = "pointer";
+
+	muteButton.on("click", toggleMute);
+	unmuteButton.on("click", toggleMute);
+
+	stage.addChild(muteButton);
 }
 
 function updatePotato() {
@@ -215,7 +237,7 @@ function renderQuestion(index) {
 	} else {
 		createjs.Tween.get(questions[index]).wait(1200).call(function() {
 			stage.addChild(questions[index]);
-		}); 
+		});
 	}
 }
 
@@ -230,14 +252,14 @@ function imageDropHandler(event) {
 	if (guess !== 0) {
 		playSound("click");
 		if (parseInt(answers.charAt(questionCounter)) === guess) { // CORRECT
-			
+
 			score++;
 			// add a part to potato
 			potatoIndex++;
 			updatePotato();
 			correctAnimation();
 		} else { 												// INCORRECT
-			
+
 			// remove a part from potato
 			potatoIndex--;
 			updatePotato();
@@ -283,6 +305,8 @@ var background, endscreen;
 var checkMark, xMark;
 var potatoParts = [];
 var potatoBody;
+
+var muteButton, unmuteButton;
 
 var PATH_TO_SUB_FOLDER = "versions/" + SUB_FOLDER + "/";
 
@@ -379,13 +403,21 @@ function setupManifest() {
 		{
 			src: "images/potato_parts/potato.png",
 			id: "body"
+		},
+		{
+			src: "images/mute.png",
+			id: "mute"
+		},
+		{
+			src: "images/unmute.png",
+			id: "unmute"
 		}
 	];
 }
 
 function startPreload() {
 	preload = new createjs.LoadQueue(true);
-    preload.installPlugin(createjs.Sound);          
+    preload.installPlugin(createjs.Sound);
     preload.on("fileload", handleFileLoad);
     preload.on("progress", handleFileProgress);
     preload.on("complete", loadComplete);
@@ -413,7 +445,11 @@ function handleFileLoad(event) {
    		potatoParts.push(new createjs.Bitmap(event.result));
    	} else if (event.item.id == "body") {
    		potatoBody = new createjs.Bitmap(event.result);
-   	}
+   	} else if (event.item.id == "mute") {
+			muteButton = new createjs.Bitmap(event.result);
+		} else if (event.item.id == "unmute") {
+			unmuteButton = new createjs.Bitmap(event.result);
+		}
 }
 
 function loadError(evt) {

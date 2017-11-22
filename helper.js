@@ -10,20 +10,22 @@
  /*
  * Toggles mute variable. Called from HTML button.
  */
-function toggleMute() {
+ function toggleMute() {
 
-	if (mute == true) {
-		mute = false;
-	} else {
-		mute = true;
-	}
+ 	if (mute == true) {
+ 		mute = false;
+ 	} else {
+ 		mute = true;
+ 	}
 
-	if (mute == true) {
-		document.getElementById("mute").firstElementChild.setAttribute("src", "images/mute.png");
-	} else {
-		document.getElementById("mute").firstElementChild.setAttribute("src", "images/unmute.png");
-	}
-}
+ 	if (mute == true) {
+ 		stage.addChild(unmuteButton);
+ 		stage.removeChild(muteButton);
+ 	} else {
+ 		stage.addChild(muteButton);
+ 		stage.removeChild(unmuteButton);
+ 	}
+ }
 
 /**
  * Shuffles array in place.
